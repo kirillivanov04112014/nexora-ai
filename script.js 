@@ -120,3 +120,18 @@ stopBtn.addEventListener("click", () => {
     voiceStatus.textContent = "Озвучивание остановлено.";
   }
 });
+
+
+// Регистрация Service Worker
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./service-worker.js")
+      .then(() => {
+        console.log("NEXORA AI: Service Worker подключён!");
+      })
+      .catch(error => {
+        console.error("Ошибка Service Worker:", error);
+      });
+  });
+}
+
