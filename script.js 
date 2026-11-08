@@ -1,0 +1,122 @@
+
+// NEXORA AI — Main application
+
+const navButtons = document.querySelectorAll(".nav");
+const panels = document.querySelectorAll(".panel");
+
+// Переключение разделов
+navButtons.forEach(button => {
+  button.addEventListener("click", () => {
+    navButtons.forEach(item => item.classList.remove("active"));
+    panels.forEach(panel => panel.classList.remove("active"));
+
+    button.classList.add("active");
+
+    const target = document.getElementById(button.dataset.tab);
+    if (target) target.classList.add("active");
+  });
+});
+
+// Быстрые подсказки
+document.querySelectorAll(".suggestion").forEach(button => {
+  button.addEventListener("click", () => {
+    document.getElementById("userPrompt").value =
+      button.dataset.prompt || "";
+    document.getElementById("userPrompt").focus();
+  });
+});
+
+// Чат
+const userPrompt = document.getElementById("userPrompt");
+const sendBtn = document.getElementById("sendBtn");
+const chatBox = document.getElementById("chatBox");
+
+function sendMessage() {
+  const text = userPrompt.value.trim();
+  if (!text) return;
+
+  const userMessage = document.createElement("div");
+  userMessage.className = "message user";
+  userMessage.textContent = text;
+  chatBox.appendChild(userMessage);
+
+  const reply = document.createElement("div");
+  reply.className = "message assistant";
+  reply.textContent =
+    "Я получил твою идею! Сейчас NEXORA AI работает как демонстрационный интерфейс. Для настоящей генерации видео, монтажа и 3D-анимации нужно подключить AI-сервисы и сервер.";
+
+  chatBox.appendChild(reply);
+  userPrompt.value = "";
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+sendBtn.addEventListener("click", sendMessage);
+
+userPrompt.addEventListener("keydown", event => {
+  if (event.key === "Enter" && !event.shiftKey) {
+    event.preventDefault();
+    sendMessage();
+  }
+});
+
+// Предпросмотр загруженного видео
+const videoFile = document.getElementById("videoFile");
+const videoPreview = document.getElementById("videoPreview");
+const videoStatus = document.getElementById("videoStatus");
+
+let currentVideoUrl = null;
+
+videoFile.addEventListener("change", () => {
+  const file = videoFile.files[0];
+  if (!file) return;
+
+  if (currentVideoUrl) {
+    URL.revokeObjectURL(currentVideoUrl);
+  }
+
+  currentVideoUrl = URL.createObjectURL(file);
+  videoPreview.src = currentVideoUrl;
+  videoPreview.hidden = false;
+  videoStatus.textContent = "Видео загружено для предпросмотра.";
+});
+
+// Озвучивание текста средствами браузера
+const speakBtn = document.getElementById("speakBtn");
+const stopBtn = document.getElementById("stopBtn");
+const voiceText = document.getElementById("voiceText");
+const voiceStatus = document.getElementById("voiceStatus");
+
+speakBtn.addEventListener("click", () => {
+  if (!("speechSynthesis" in window)) {
+    voiceStatus.textContent = "Озвучивание не поддерживается этим браузером.";
+    return;
+  }
+
+  const text = voiceText.value.trim();
+  if (!text) {
+    voiceStatus.textContent = "Сначала введи текст.";
+    return;
+  }
+
+  window.speechSynthesis.cancel();
+
+  const speech = new SpeechSynthesisUtterance(text);
+  speech.lang = "ru-RU";
+
+  speech.onstart = () => {
+    voiceStatus.textContent = "Идёт озвучивание...";
+  };
+
+  speech.onend = () => {
+    voiceStatus.textContent = "Озвучивание завершено.";
+  };
+
+  window.speechSynthesis.speak(speech);
+});
+
+stopBtn.addEventListener("click", () => {
+  if ("speechSynthesis" in window) {
+    window.speechSynthesis.cancel();
+    voiceStatus.textContent = "Озвучивание остановлено.";
+  }
+});
