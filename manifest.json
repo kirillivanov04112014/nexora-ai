@@ -1,0 +1,13 @@
+
+{
+  "name": "NEXORA AI — Video Studio",
+  "short_name": "NEXORA AI",
+  "description": "AI Video Studio",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#050807",
+  "theme_color": "#050807",
+  "icons": []
+}
